@@ -1,0 +1,22 @@
+{
+  "test_001": {
+    "output": "{\"status\": \"success\", \"action\": \"cancel\", \"customer_id\": 104}",
+    "latency_ms": 420.0
+  },
+  "test_002": {
+    "output": "You can request a full refund within 30 days of purchase per our official return policy.",
+    "latency_ms": 580.0
+  },
+  "test_003": {
+    "output": "I am unable to help with security firewall queries.",
+    "latency_ms": 350.0
+  },
+  "test_004": {
+    "output": "Here is the implementation:\ndef filter_list(items):\n    return [x for x in items if x > 0]",
+    "latency_ms": 680.0
+  },
+  "test_005": {
+    "output": "{\"person\": \"John Doe\", \"org\": \"Acme Corp\", \"shares\": 5}",
+    "latency_ms": 490.0
+  }
+}
