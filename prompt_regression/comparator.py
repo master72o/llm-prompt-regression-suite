@@ -107,3 +107,41 @@ class RegressionComparator:
             ci_passed=ci_passed,
             quality_gate_threshold=quality_gate_threshold,
         )
+
+    @staticmethod
+    def summarize_regression_breakdown(report: RegressionSuiteReport) -> Dict[str, Any]:
+        """
+        Aggregates regression counts by RegressionType, identifies the most degraded test cases,
+        and produces an executive release recommendation.
+        """
+        counts_by_type: Dict[str, int] = {}
+        critical_ids: List[str] = []
+
+        for reg in report.regressions:
+            rtype = reg.regression_type.value if hasattr(reg.regression_type, "value") else str(reg.regression_type)
+            counts_by_type[rtype] = counts_by_type.get(rtype, 0) + 1
+            if reg.is_critical:
+                critical_ids.append(reg.test_id)
+
+        sorted_by_delta = sorted(report.regressions, key=lambda r: r.score_delta)
+        worst_test_ids = [r.test_id for r in sorted_by_delta[:3]]
+        mean_score_delta = round(report.candidate_mean_score - report.baseline_mean_score, 4)
+
+        if report.ci_passed and not report.regressions:
+            decision = "APPROVE_RELEASE"
+        elif report.ci_passed:
+            decision = "APPROVE_WITH_WARNINGS"
+        else:
+            decision = "BLOCK_RELEASE"
+
+        return {
+            "baseline_version": report.baseline_version,
+            "candidate_version": report.candidate_version,
+            "total_regressions": len(report.regressions),
+            "critical_regression_count": len(critical_ids),
+            "critical_test_ids": critical_ids,
+            "counts_by_type": counts_by_type,
+            "worst_degraded_test_ids": worst_test_ids,
+            "mean_score_delta": mean_score_delta,
+            "release_decision": decision,
+        }
